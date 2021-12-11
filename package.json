@@ -23,6 +23,7 @@
     "jest": "^27.4.3"
   },
   "dependencies": {
-    "inquirer": "^8.2.0"
+    "inquirer": "^8.2.0",
+    "jquery": "^3.6.0"
   }
 }
