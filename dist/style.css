@@ -1,0 +1,27 @@
+
+    body {
+        margin: 30px;
+    }
+
+    header {
+        text-align: center;
+        background-color: #E84756;
+        color: white;
+        padding: 30px;
+        margin: 20px 0;
+    }
+
+    .card {
+        margin: 10px;
+    }
+
+    .card-header {
+        background-color: #0077F7;
+        color: white;
+        margin: 0 -12px;
+    }
+
+    .card-subtitle {
+        opacity: 0.8;
+    }
+    
