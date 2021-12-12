@@ -51,7 +51,10 @@ const questions = [
     },
 ]
 
-let HTMLtemplate = `
+
+function generateHTML() {
+    //start HTML
+    let HTML = `
     <!doctype html>
     <html lang="en">
     <head>
@@ -67,35 +70,115 @@ let HTMLtemplate = `
             <h1>My Team</h1>
         </header>
         <section class="row justify-content-center" id="container">
-            <div class="card" style="width: 18rem;" id="employee">
-                <div class="card-header">
-                    <h5 class="card-title" id="name">
-                        <!-- employee name -->
-                    </h5>
-                    <h6 class="card-subtitle mb-2" id="role">
-                        <!-- employee role -->
-                    </h6>
-                </div>
-                <ul class="list-group list-group-flush">
-                <li class="list-group-item" id="id">
-                    <!-- employee id number -->
-                    ID: 
-                </li>
-                <li class="list-group-item" id="email">
-                    <!-- employee email -->
-                    
-                </li>
-                <li class="list-group-item">
-                    <!-- other role information (github, office number, school) -->
-                </li>
-                </ul>
-            </div>
+    `
+
+    let HTMLend = `
         </section>
     </body>
     </html>
-`
+    `
 
-let cssTemplate = `
+    //generate manager card
+    employeeArray.forEach(Manager => {
+        if (Manager.role == 'Manager') {
+            HTML += `
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    <h5 class="card-title" id="name">
+                        ${Manager.name}
+                    </h5>
+                    <h6 class="card-subtitle mb-2">
+                        ${Manager.role}
+                    </h6>
+                </div>
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    ID: ${Manager.id}
+                </li>
+                <li class="list-group-item">
+                    Email: <a href="mailto:${Manager.email}"> ${Manager.email} </a>
+                </li>
+                <li class="list-group-item">
+                    Office Number: ${Manager.officeNumber}
+                </li>
+                </ul>
+            </div>
+            `
+        }
+    })    
+    
+    //generate engineer cards
+    employeeArray.forEach(Engineer => {
+        if (Engineer.role == 'Engineer') {
+            HTML += `
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    <h5 class="card-title" id="name">
+                        ${Engineer.name}
+                    </h5>
+                    <h6 class="card-subtitle mb-2">
+                        ${Engineer.role}
+                    </h6>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">
+                      ID: ${Engineer.id}
+                  </li>
+                  <li class="list-group-item">
+                      Email: <a href="mailto:${Engineer.email}"> ${Engineer.email} </a>
+                  </li>
+                  <li class="list-group-item">
+                      GitHub: <a href="https://github.com/${Engineer.github}" target="blank"> ${Engineer.github} </a>
+                  </li>
+                </ul>
+            </div>
+            `
+        }
+    })
+
+    //generate intern cards
+    employeeArray.forEach(Intern => {
+        if (Intern.role == 'Intern') {
+            HTML += `
+            <div class="card" style="width: 18rem;">
+                <div class="card-header">
+                    <h5 class="card-title" id="name">
+                        ${Intern.name}
+                    </h5>
+                    <h6 class="card-subtitle mb-2">
+                        ${Intern.role}
+                    </h6>
+                </div>
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    ID: ${Intern.id}
+                </li>
+                <li class="list-group-item">
+                    Email: <a href="mailto:${Intern.email}"> ${Intern.email} </a>
+                </li>
+                <li class="list-group-item">
+                    School: ${Intern.school}
+                </li>
+                </ul>
+            </div>
+            `
+        }
+    })
+
+    //finish HTML
+    HTML += HTMLend
+
+    fs.writeFile('./dist/index.html', HTML, function (err) {
+        if (err) {
+            console.log("Error creating HTML file.")
+        } else {
+            console.log("HTML file created.")
+        }
+    })
+}
+
+function generateCSS() {
+    let cssTemplate = `
     body {
         margin: 30px;
     }
@@ -121,16 +204,7 @@ let cssTemplate = `
     .card-subtitle {
         opacity: 0.8;
     }
-`
-
-function generateFiles() {
-    fs.writeFile('./dist/index.html', HTMLtemplate, function (err) {
-        if (err) {
-            console.log("Error creating HTML file.")
-        } else {
-            console.log("HTML file created.")
-        }
-    })
+    `
 
     fs.writeFile('./dist/style.css', cssTemplate, function (err) {
         if (err) {
@@ -148,13 +222,13 @@ function initialize(){
         let employee;
 
         if (answers.role == 'Engineer') {
-            employee = new Engineer(answers.name, answers.id, answers.email, answers.github)
+            employee = new Engineer(answers.name, answers.id, answers.email, answers.role, answers.github)
         }
         if (answers.role == 'Intern') {
-            employee = new Intern(answers.name, answers.id, answers.email, answers.school)
+            employee = new Intern(answers.name, answers.id, answers.email, answers.role, answers.school)
         }
         if (answers.role == 'Manager') {
-            employee = new Manager(answers.name, answers.id, answers.email, answers.officeNumber)
+            employee = new Manager(answers.name, answers.id, answers.email, answers.role, answers.officeNumber)
         }
 
         employeeArray.push(employee)
@@ -168,7 +242,8 @@ function initialize(){
             if (confirm.nextEmployee == true) {
                 initialize();
             } else {
-                console.log(employeeArray)
+                generateHTML();
+                generateCSS();
             }
         })
     })
