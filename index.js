@@ -1,6 +1,12 @@
 const inquirer = require('inquirer')
 const fs = require('fs');
 
+const Employee = require('./lib/Employee')
+const Engineer = require('./lib/Engineer')
+const Intern = require('./lib/Intern')
+const Manager = require('./lib/Manager')
+
+
 let employeeArray = []
 
 const questions = [
@@ -33,13 +39,13 @@ const questions = [
     },
     {
         type: 'input',
-        name: 'github',
+        name: 'school',
         message: "What school does this employee attend?",
         when: (answers) => answers.role == 'Intern',
     },
     {
         type: 'input',
-        name: 'github',
+        name: 'officeNumber',
         message: "What is this employee's office number?",
         when: (answers) => answers.role == 'Manager',
     },
@@ -61,6 +67,29 @@ let HTMLtemplate = `
             <h1>My Team</h1>
         </header>
         <section class="row justify-content-center" id="container">
+            <div class="card" style="width: 18rem;" id="employee">
+                <div class="card-header">
+                    <h5 class="card-title" id="name">
+                        <!-- employee name -->
+                    </h5>
+                    <h6 class="card-subtitle mb-2" id="role">
+                        <!-- employee role -->
+                    </h6>
+                </div>
+                <ul class="list-group list-group-flush">
+                <li class="list-group-item" id="id">
+                    <!-- employee id number -->
+                    ID: 
+                </li>
+                <li class="list-group-item" id="email">
+                    <!-- employee email -->
+                    
+                </li>
+                <li class="list-group-item">
+                    <!-- other role information (github, office number, school) -->
+                </li>
+                </ul>
+            </div>
         </section>
     </body>
     </html>
@@ -94,7 +123,7 @@ let cssTemplate = `
     }
 `
 
-function generateFile() {
+function generateFiles() {
     fs.writeFile('./dist/index.html', HTMLtemplate, function (err) {
         if (err) {
             console.log("Error creating HTML file.")
@@ -116,20 +145,31 @@ function initialize(){
     inquirer
     .prompt(questions)
     .then((answers) => {
-        employeeArray.push(answers)
+        let employee;
+
+        if (answers.role == 'Engineer') {
+            employee = new Engineer(answers.name, answers.id, answers.email, answers.github)
+        }
+        if (answers.role == 'Intern') {
+            employee = new Intern(answers.name, answers.id, answers.email, answers.school)
+        }
+        if (answers.role == 'Manager') {
+            employee = new Manager(answers.name, answers.id, answers.email, answers.officeNumber)
+        }
+
+        employeeArray.push(employee)
+
         inquirer.prompt({
             type: 'confirm',
             name: 'nextEmployee',
-            message: "Would you like to add another employee?",
+            message: "New employee added! Would you like to add another?",
         })
         .then((confirm) => {
             if (confirm.nextEmployee == true) {
                 initialize();
+            } else {
+                console.log(employeeArray)
             }
-        })
-        .then(employeeData => {
-            let { name, id, email, role, github, school, officeNumber} = employeeData;
-            console.log(employeeData)
         })
     })
 }
